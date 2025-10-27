@@ -1,43 +1,43 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-    {% if category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
+    {% if search_query %}Пошук: {{ search_query }}{% elif category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
 {% endblock %}
 
 {% block content %}
-<h1>{% if category %}{{ category.name }}{% else %}Каталог товарів{% endif %}</h1>
+<h1>
+    {% if search_query %}Результати пошуку{% elif category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
+</h1>
 
-<!-- Сортування -->
+<!-- 🔍 Форма пошуку -->
+{% include 'main/search_form.html' %}
+
+<!-- 🔄 Кнопки сортування -->
 <div class="sort-buttons">
     <strong>Сортувати:</strong>
-    {% for key, label in dict.items %}
-        <!-- Ми передамо варіанти через контекст або жорстко закодуємо -->
-    {% endfor %}
-    <a href="?sort=new" class="sort-btn {% if current_sort == 'new' %}active{% endif %}">Нові</a>
-    <a href="?sort=old" class="sort-btn {% if current_sort == 'old' %}active{% endif %}">Старі</a>
-    <a href="?sort=popular" class="sort-btn {% if current_sort == 'popular' %}active{% endif %}">Популярні</a>
-    <a href="?sort=price_low" class="sort-btn {% if current_sort == 'price_low' %}active{% endif %}">Ціна: низька</a>
-    <a href="?sort=price_high" class="sort-btn {% if current_sort == 'price_high' %}active{% endif %}">Ціна: висока</a>
-    <a href="?sort=name" class="sort-btn {% if current_sort == 'name' %}active{% endif %}">Назва</a>
+    <a href="?sort=new{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sort-btn {% if current_sort == 'new' %}active{% endif %}">Нові</a>
+    <a href="?sort=old{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sort-btn {% if current_sort == 'old' %}active{% endif %}">Старі</a>
+    <a href="?sort=popular{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sort-btn {% if current_sort == 'popular' %}active{% endif %}">Популярні</a>
+    <a href="?sort=price_low{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sort-btn {% if current_sort == 'price_low' %}active{% endif %}">Ціна: низька</a>
+    <a href="?sort=price_high{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sort-btn {% if current_sort == 'price_high' %}active{% endif %}">Ціна: висока</a>
+    <a href="?sort=name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sort-btn {% if current_sort == 'name' %}active{% endif %}">Назва</a>
 </div>
 
-<!-- Список товарів -->
+<!-- 📦 Список товарів -->
 <div class="products-grid">
     {% for product in products %}
-        <div class="product-card">
-            {% if product.featured %}
-                <div class="featured-badge">Рекомендовано</div>
-            {% endif %}
-            {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            {% endif %}
-            <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-            <p class="price">{{ product.price }} грн</p>
-            <p class="description">{{ product.description|truncatewords:15 }}</p>
-            <p class="meta">Категорія: {{ product.category.name }} | Переглядів: {{ product.views }}</p>
-        </div>
+        {% include 'main/components/product_card.html' %}
     {% empty %}
-        <p>Товарів не знайдено.</p>
+        <p class="no-results">
+            {% if search_query %}
+                За запитом "<strong>{{ search_query }}</strong>" товарів не знайдено.
+            {% else %}
+                Товарів не знайдено.
+            {% endif %}
+        </p>
     {% endfor %}
 </div>
+
+<!-- 📄 Пагінація -->
+{% include 'main/pagination.html' %}
 {% endblock %}

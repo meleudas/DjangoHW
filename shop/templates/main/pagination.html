@@ -1,0 +1,19 @@
+{% if products.has_other_pages %}
+<div class="pagination">
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">&laquo; Попередня</a>
+    {% endif %}
+
+    {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+            <span class="page-current">{{ num }}</span>
+        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+            <a href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Наступна &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}

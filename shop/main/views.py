@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Count
 from .models import Product, Category
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 def product_list(request, category_slug=None):
     categories = Category.objects.filter(is_active=True)
@@ -11,7 +12,16 @@ def product_list(request, category_slug=None):
         category = get_object_or_404(Category, slug=category_slug, is_active=True)
         products = products.filter(category=category)
 
-    # Сортування
+    # 🔍 Пошук
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(category__name__icontains=search_query)
+        )
+
+    # 📊 Сортування
     sort = request.GET.get('sort', 'new')
     sort_mapping = {
         'new': '-created_at',
@@ -23,11 +33,23 @@ def product_list(request, category_slug=None):
     }
     products = products.order_by(sort_mapping.get(sort, '-created_at'))
 
+    # 📄 Пагінація (6 товарів на сторінку)
+    paginator = Paginator(products, 6)
+    page = request.GET.get('page')
+
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+
     context = {
         'products': products,
         'categories': categories,
         'category': category,
         'current_sort': sort,
+        'search_query': search_query,
     }
     return render(request, 'main/product_list.html', context)
 

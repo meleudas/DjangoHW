@@ -204,3 +204,71 @@ footer {
     border-radius: 8px;
     margin-bottom: 1rem;
 }
+
+
+
+/* Пошук */
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+.search-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.search-btn,
+.search-reset {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+.search-btn {
+    background: #3498db;
+    color: white;
+}
+.search-reset {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Пагінація */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+.page-link,
+.page-current {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.page-link {
+    color: #3498db;
+}
+.page-link:hover {
+    background: #f0f8ff;
+}
+.page-current {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+/* Повідомлення про відсутність результатів */
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
+    font-style: italic;
+}

@@ -1,0 +1,13 @@
+<form method="get" class="search-form">
+    <input
+        type="text"
+        name="q"
+        value="{{ request.GET.q }}"
+        placeholder="Пошук товарів..."
+        class="search-input"
+    />
+    <button type="submit" class="search-btn">Шукати</button>
+    {% if request.GET.q %}
+        <a href="{% url 'main:product_list' %}" class="search-reset">Скинути</a>
+    {% endif %}
+</form>
