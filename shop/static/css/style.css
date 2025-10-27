@@ -152,3 +152,55 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Форми авторизації */
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+}
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.alert {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.text-danger {
+    color: #e74c3c;
+    font-size: 0.9rem;
+}
+.form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Кнопки авторизації в header */
+.auth-buttons {
+    margin-top: 1rem;
+}
+.auth-buttons .btn {
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Профіль */
+.profile-info {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}

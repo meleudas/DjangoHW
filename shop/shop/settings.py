@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.AdminAccessRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'shop.urls'
@@ -120,6 +122,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'main:product_list'
+LOGOUT_REDIRECT_URL = 'main:product_list'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

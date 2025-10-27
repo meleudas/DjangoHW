@@ -9,6 +9,7 @@
 <body>
     <header>
         <h1><a href="{% url 'main:product_list' %}">Інтернет-магазин</a></h1>
+        
         <nav>
             <ul>
                 <li><a href="{% url 'main:product_list' %}">Усі товари</a></li>
@@ -17,12 +18,24 @@
                 {% endfor %}
             </ul>
         </nav>
-    </header>
 
-    <main>
+        <!-- Блок авторизації -->
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a class="btn" href="{% url 'admin:index' %}">Адмінка</a>
+                {% endif %}
+                <a class="btn" href="{% url 'accounts:profile' %}">Профіль</a>
+                <a class="btn" href="{% url 'accounts:logout' %}">Вийти</a>
+            {% else %}
+                <a class="btn" href="{% url 'accounts:login' %}">Вхід</a>
+                <a class="btn" href="{% url 'accounts:register' %}">Реєстрація</a>
+            {% endif %}
+        </div>
+    </header>
+      <main>
         {% block content %}{% endblock %}
     </main>
-
     <footer>
         <p>&copy; 2025 Магазин. Усі права захищені.</p>
     </footer>

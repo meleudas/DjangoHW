@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профіль{% endblock %}
+
+{% block content %}
+<h1>Мій профіль</h1>
+
+<div class="profile-info">
+    <p><strong>Ім'я користувача:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email|default:"Не вказано" }}</p>
+    <p><strong>Дата реєстрації:</strong> {{ user.date_joined|date:"d.m.Y H:i" }}</p>
+    <p><strong>Останній вхід:</strong> {{ user.last_login|date:"d.m.Y H:i"|default:"Ніколи" }}</p>
+</div>
+
+<div class="actions">
+    <a href="{% url 'main:product_list' %}" class="btn">Повернутися до товарів</a>
+    <a href="{% url 'accounts:logout' %}" class="btn">Вийти</a>
+</div>
+{% endblock %}
