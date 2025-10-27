@@ -1,14 +1,30 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Магазин{% endblock %}</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+    <header>
+        <h1><a href="{% url 'main:product_list' %}">Інтернет-магазин</a></h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'main:product_list' %}">Усі товари</a></li>
+                {% for cat in categories %}
+                    <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <footer>
+        <p>&copy; 2025 Магазин. Усі права захищені.</p>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<article class="product-detail">
+    <h1>{{ product.name }}</h1>
+    <div class="meta">
+        Категорія: <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> |
+        Переглядів: {{ product.views }} |
+        Додано: {{ product.created_at|date:"d.m.Y" }}
+    </div>
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+    {% endif %}
+
+    <p class="price">{{ product.price }} грн</p>
+
+    <div class="description">
+        {{ product.description|linebreaks }}
+    </div>
+
+    <div class="actions">
+        <button class="btn">Додати до кошика</button>
+        <a href="{% url 'main:product_list' %}" class="btn back">Повернутися до каталогу</a>
+    </div>
+</article>
+
+{% if related_products %}
+    <section class="related-products">
+        <h2>Схожі товари</h2>
+        <div class="related-grid">
+            {% for item in related_products %}
+                <div class="product-card">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                    {% endif %}
+                    <h3><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></h3>
+                    <p class="price">{{ item.price }} грн</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+{% endblock %}

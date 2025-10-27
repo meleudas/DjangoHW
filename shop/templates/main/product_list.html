@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1>{% if category %}{{ category.name }}{% else %}Каталог товарів{% endif %}</h1>
+
+<!-- Сортування -->
+<div class="sort-buttons">
+    <strong>Сортувати:</strong>
+    {% for key, label in dict.items %}
+        <!-- Ми передамо варіанти через контекст або жорстко закодуємо -->
+    {% endfor %}
+    <a href="?sort=new" class="sort-btn {% if current_sort == 'new' %}active{% endif %}">Нові</a>
+    <a href="?sort=old" class="sort-btn {% if current_sort == 'old' %}active{% endif %}">Старі</a>
+    <a href="?sort=popular" class="sort-btn {% if current_sort == 'popular' %}active{% endif %}">Популярні</a>
+    <a href="?sort=price_low" class="sort-btn {% if current_sort == 'price_low' %}active{% endif %}">Ціна: низька</a>
+    <a href="?sort=price_high" class="sort-btn {% if current_sort == 'price_high' %}active{% endif %}">Ціна: висока</a>
+    <a href="?sort=name" class="sort-btn {% if current_sort == 'name' %}active{% endif %}">Назва</a>
+</div>
+
+<!-- Список товарів -->
+<div class="products-grid">
+    {% for product in products %}
+        <div class="product-card">
+            {% if product.featured %}
+                <div class="featured-badge">Рекомендовано</div>
+            {% endif %}
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% endif %}
+            <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+            <p class="price">{{ product.price }} грн</p>
+            <p class="description">{{ product.description|truncatewords:15 }}</p>
+            <p class="meta">Категорія: {{ product.category.name }} | Переглядів: {{ product.views }}</p>
+        </div>
+    {% empty %}
+        <p>Товарів не знайдено.</p>
+    {% endfor %}
+</div>
+{% endblock %}
