@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load shop_tags shop_filters %}
 
 {% block title %}{{ product.name }}{% endblock %}
 
@@ -7,15 +8,15 @@
     <h1>{{ product.name }}</h1>
     <div class="meta">
         Категорія: <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> |
-        Переглядів: {{ product.views }} |
-        Додано: {{ product.created_at|date:"d.m.Y" }}
+        Переглядів: {{ product.views|compact_number }} |
+        Додано: {{ product.created_at|time_ago }}
     </div>
 
     {% if product.image %}
         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
     {% endif %}
 
-    <p class="price">{{ product.price }} грн</p>
+    <p class="price">{{ product.price|currency }}</p>
 
     <div class="description">
         {{ product.description|linebreaks }}
@@ -32,13 +33,7 @@
         <h2>Схожі товари</h2>
         <div class="related-grid">
             {% for item in related_products %}
-                <div class="product-card">
-                    {% if item.image %}
-                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
-                    {% endif %}
-                    <h3><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></h3>
-                    <p class="price">{{ item.price }} грн</p>
-                </div>
+                {% show_product_card item %}
             {% endfor %}
         </div>
     </section>

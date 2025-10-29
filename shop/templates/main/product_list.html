@@ -1,13 +1,23 @@
 {% extends 'main/base.html' %}
+{% load shop_filters shop_tags %}
 
 {% block title %}
     {% if search_query %}Пошук: {{ search_query }}{% elif category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
 {% endblock %}
 
 {% block content %}
-<h1>
-    {% if search_query %}Результати пошуку{% elif category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
-</h1>
+<h1>{{ user_greeting }}</h1>
+
+<!-- Популярні товари (показуємо завжди) -->
+{% show_popular_products 3 %}
+
+<!-- Кількість товарів -->
+<p class="product-count">
+    Усього товарів: <strong>{% get_products_count %}</strong>
+    {% if category %}
+        | У категорії "{{ category.name }}": <strong>{% get_products_count category %}</strong>
+    {% endif %}
+</p>
 
 <!-- 🔍 Форма пошуку -->
 {% include 'main/search_form.html' %}
@@ -26,7 +36,7 @@
 <!-- 📦 Список товарів -->
 <div class="products-grid">
     {% for product in products %}
-        {% include 'main/components/product_card.html' %}
+        {% show_product_card product %}
     {% empty %}
         <p class="no-results">
             {% if search_query %}

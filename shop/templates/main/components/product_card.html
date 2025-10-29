@@ -1,3 +1,5 @@
+{% load shop_tags shop_filters %}
+
 <div class="product-card">
     {% if product.featured %}
         <div class="featured-badge">Рекомендовано</div>
@@ -6,7 +8,10 @@
         <img src="{{ product.image.url }}" alt="{{ product.name }}">
     {% endif %}
     <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-    <p class="price">{{ product.price }} грн</p>
+    
+    <!-- Ціна без знижок -->
+    <p class="price">{{ product.price|currency }}</p>
+    
     <p class="description">{{ product.description|truncatewords:15 }}</p>
-    <p class="meta">Категорія: {{ product.category.name }} | Переглядів: {{ product.views }}</p>
+    <p class="meta">Категорія: {{ product.category.name }} | Переглядів: {{ product.views|compact_number }}</p>
 </div>

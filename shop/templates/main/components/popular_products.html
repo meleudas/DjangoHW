@@ -1,0 +1,12 @@
+{% load shop_tags shop_filters %}
+
+<div class="popular-products">
+    <h3>Популярні товари</h3>
+    <div class="products-grid">
+        {% for product in popular_products %}
+            {% show_product_card product %}
+        {% empty %}
+            <p>Немає популярних товарів</p>
+        {% endfor %}
+    </div>
+</div>
