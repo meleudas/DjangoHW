@@ -1,12 +1,48 @@
 {% load shop_tags shop_filters %}
-
-<div class="popular-products">
-    <h3>Популярні товари</h3>
-    <div class="products-grid">
-        {% for product in popular_products %}
-            {% show_product_card product %}
-        {% empty %}
-            <p>Немає популярних товарів</p>
-        {% endfor %}
+{% load static tailwind_tags %}
+<div class="container mx-auto px-4 py-8">
+    <div class="popular-products mb-10">
+        <!-- Заголовок секції -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-700 font-medium mb-4">
+                <i class="fas fa-fire mr-2"></i> Топ продажів
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                Популярні товари
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                Найбільш популярні товари серед наших клієнтів за останній місяць
+            </p>
+        </div>
+        
+        <!-- Сітка товарів -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for product in popular_products %}
+                {% show_product_card product %}
+            {% empty %}
+                <div class="col-span-full bg-white rounded-2xl border-2 border-dashed border-gray-300 p-12 text-center">
+                    <div class="text-gray-400 mb-4">
+                        <i class="fas fa-chart-line text-5xl"></i>
+                    </div>
+                    <p class="text-xl font-medium text-gray-700 mb-2">
+                        Немає популярних товарів
+                    </p>
+                    <p class="text-gray-500">
+                        Зараз немає даних про популярність товарів. Поверніться пізніше.
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Додаткова дія -->
+        {% if popular_products %}
+            <div class="mt-10 text-center">
+                <a href="{% url 'main:product_list' %}?sort=popular" 
+                   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-800 transition-all transform hover:scale-105">
+                    <span>Переглянути всі популярні товари</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        {% endif %}
     </div>
 </div>

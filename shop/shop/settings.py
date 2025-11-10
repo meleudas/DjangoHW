@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,7 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'accounts',
+    'tailwind',
+    'theme',
+    'markdownx',
 ]
+if DEBUG:
+    # Add django_browser_reload only in DEBUG mode
+    INSTALLED_APPS += ["django_browser_reload"]
+    
+TAILWIND_APP_NAME = "theme"
+NPM_BIN_PATH = "C:/Programing/nodejs/npm.cmd"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +62,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.AdminAccessRedirectMiddleware',
 ]
+if DEBUG:
+    # Add django_browser_reload middleware only in DEBUG mode
+    MIDDLEWARE += [
+        "django_browser_reload.middleware.BrowserReloadMiddleware",
+    ]
 
 ROOT_URLCONF = 'shop.urls'
 
@@ -120,11 +136,16 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+if DEBUG:
+    # Налаштування статичних файлів
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'main:product_list'
 LOGOUT_REDIRECT_URL = 'main:product_list'
+MARKDOWNX_UPLOAD_MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+MARKDOWNX_MEDIA_PATH = 'markdownx/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

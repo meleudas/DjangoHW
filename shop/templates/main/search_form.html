@@ -1,13 +1,26 @@
-<form method="get" class="search-form">
-    <input
-        type="text"
-        name="q"
-        value="{{ request.GET.q }}"
-        placeholder="Пошук товарів..."
-        class="search-input"
-    />
-    <button type="submit" class="search-btn">Шукати</button>
+{% load static tailwind_tags %}
+<form method="get" class="relative w-full max-w-xl mx-auto">
+    <div class="relative flex items-center">
+        <div class="absolute left-4 text-gray-400">
+            <i class="fas fa-search"></i>
+        </div>
+        <input
+            type="text"
+            name="q"
+            value="{{ request.GET.q }}"
+            placeholder="Пошук товарів..."
+            class="w-full py-3 pl-10 pr-24 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all"
+        />
+        <button type="submit" class="absolute right-1 top-1 bottom-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-md">
+            <span class="hidden sm:inline">Шукати</span>
+            <i class="fas fa-search sm:hidden"></i>
+        </button>
+    </div>
     {% if request.GET.q %}
-        <a href="{% url 'main:product_list' %}" class="search-reset">Скинути</a>
+        <div class="mt-2 flex justify-end">
+            <a href="{% url 'main:product_list' %}" class="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fas fa-times mr-1"></i> Скинути пошук
+            </a>
+        </div>
     {% endif %}
 </form>

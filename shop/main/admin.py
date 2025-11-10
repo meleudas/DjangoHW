@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from markdownx.admin import MarkdownxModelAdmin 
 from .models import Category, Product
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -16,14 +18,34 @@ class CategoryAdmin(admin.ModelAdmin):
         return "—"
     image_tag.short_description = 'Зображення'
 
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(MarkdownxModelAdmin):  
     list_display = ('id', 'name', 'category', 'price', 'is_available', 'featured', 'views', 'image_tag')
     list_filter = ('category', 'is_available', 'featured', 'created_at')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
     list_editable = ('price', 'is_available', 'featured')
     ordering = ('-created_at',)
+
+    fieldsets = (
+        ('Основна інформація', {
+            'fields': ('name', 'slug', 'category', 'image')
+        }),
+        ('Описи', {
+            'fields': ('description', 'detailed_description'),  
+            'description': "Короткий опис — звичайний текст. Детальний опис — у форматі Markdown."
+        }),
+        ('Ціни та доступність', {
+            'fields': ('price', 'is_available', 'featured')
+        }),
+        ('Статистика та службове', {
+            'fields': ('views', 'created_at', 'updated_at'),
+            'classes': ('collapse',) 
+        }),
+    )
+
+    readonly_fields = ('created_at', 'updated_at', 'views')  
 
     def image_tag(self, obj):
         if obj.image:

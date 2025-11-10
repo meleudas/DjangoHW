@@ -1,41 +1,90 @@
 {% extends 'main/base.html' %}
 {% load shop_tags shop_filters %}
+{% load static tailwind_tags %}
 
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
-<article class="product-detail">
-    <h1>{{ product.name }}</h1>
-    <div class="meta">
-        Категорія: <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> |
-        Переглядів: {{ product.views|compact_number }} |
-        Додано: {{ product.created_at|time_ago }}
-    </div>
-
-    {% if product.image %}
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-    {% endif %}
-
-    <p class="price">{{ product.price|currency }}</p>
-
-    <div class="description">
-        {{ product.description|linebreaks }}
-    </div>
-
-    <div class="actions">
-        <button class="btn">Додати до кошика</button>
-        <a href="{% url 'main:product_list' %}" class="btn back">Повернутися до каталогу</a>
-    </div>
-</article>
-
-{% if related_products %}
-    <section class="related-products">
-        <h2>Схожі товари</h2>
-        <div class="related-grid">
-            {% for item in related_products %}
-                {% show_product_card item %}
-            {% endfor %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Зображення товару -->
+        <div class="flex justify-center items-center bg-gray-50 rounded-xl p-4">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                     class="max-w-full h-auto rounded-lg shadow-md object-contain"
+                     style="max-height: 500px;">
+            {% else %}
+                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-96 flex items-center justify-center">
+                    <span class="text-gray-500 text-lg">Немає зображення</span>
+                </div>
+            {% endif %}
         </div>
-    </section>
-{% endif %}
+
+        <!-- Основна інформація -->
+        <div class="flex flex-col">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{{ product.name }}</h1>
+            
+            <div class="flex items-center mb-4">
+                <a href="{{ product.category.get_absolute_url }}" 
+                   class="text-blue-600 hover:text-blue-800 font-medium">
+                    {{ product.category.name }}
+                </a>
+                <span class="mx-2 text-gray-400">•</span>
+                <span class="text-gray-500">
+                    Переглядів: {{ product.views|compact_number }} • Додано: {{ product.created_at|time_ago }}
+                </span>
+            </div>
+
+            <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-3xl font-bold rounded-lg px-6 py-4 mb-6 shadow-lg">
+                {{ product.price|currency }}
+                {% if product.discount_price %}
+                    <span class="text-xl line-through opacity-75 ml-3">{{ product.discount_price|currency }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Короткий опис -->
+            {% if product.description %}
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Короткий опис</h2>
+                    <p class="text-gray-700 leading-relaxed">{{ product.description|linebreaks }}</p>
+                </div>
+            {% endif %}
+
+            <!-- Детальний опис (Markdown) -->
+            {% if product.detailed_description %}
+                <div class="mb-8 border-t border-b border-gray-200 py-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Детальний опис</h2>
+                    <div class="prose prose-lg max-w-none prose-blue">
+                        {{ product.detailed_description|markdown }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Дії з товаром -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-auto pt-4 border-t border-gray-200">
+                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors shadow-md">
+                    <i class="fas fa-cart-plus mr-2"></i>Додати до кошика
+                </button>
+                <a href="{% url 'main:product_list' %}" 
+                   class="flex-1 sm:flex-none text-center bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors">
+                    Повернутися до каталогу
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Схожі товари -->
+    {% if related_products %}
+        <section class="mt-16">
+            <div class="border-t border-gray-200 pt-10">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Схожі товари</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {% for item in related_products %}
+                        {% show_product_card item %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+</div>
 {% endblock %}

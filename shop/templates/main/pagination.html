@@ -1,19 +1,88 @@
+{% load static tailwind_tags %}
 {% if products.has_other_pages %}
-<div class="pagination">
-    {% if products.has_previous %}
-        <a href="?page={{ products.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">&laquo; Попередня</a>
-    {% endif %}
-
-    {% for num in products.paginator.page_range %}
-        {% if products.number == num %}
-            <span class="page-current">{{ num }}</span>
-        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-            <a href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">{{ num }}</a>
-        {% endif %}
-    {% endfor %}
-
-    {% if products.has_next %}
-        <a href="?page={{ products.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Наступна &raquo;</a>
-    {% endif %}
+<div class="mt-8">
+    <nav aria-label="Навігація по сторінках" class="flex justify-center">
+        <ul class="inline-flex items-center -space-x-px text-sm">
+            <!-- Попередня сторінка -->
+            {% if products.has_previous %}
+                <li>
+                    <a href="?page={{ products.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                       class="flex items-center justify-center px-3.5 h-10 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                       aria-label="Попередня сторінка">
+                        <i class="fas fa-chevron-left mr-1"></i> <span class="hidden md:inline">Попередня</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <span class="flex items-center justify-center px-3.5 h-10 ml-0 leading-tight text-gray-400 bg-gray-100 border border-gray-300 rounded-l-lg cursor-not-allowed"
+                          aria-hidden="true">
+                        <i class="fas fa-chevron-left mr-1"></i> <span class="hidden md:inline">Попередня</span>
+                    </span>
+                </li>
+            {% endif %}
+            
+            <!-- Номери сторінок -->
+            {% for num in products.paginator.page_range %}
+                {% if forloop.first and num > 2 %}
+                    <li>
+                        <span class="flex items-center justify-center px-3.5 h-10 leading-tight text-gray-500 bg-white border border-gray-300">...</span>
+                    </li>
+                {% endif %}
+                
+                {% if num > products.number|add:'-3' and num < products.number|add:'3' or forloop.first or forloop.last %}
+                    <li>
+                        {% if products.number == num %}
+                            <span class="z-10 flex items-center justify-center px-3.5 h-10 leading-tight text-blue-600 bg-blue-50 border border-blue-300 font-bold rounded-md"
+                                  aria-current="page">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                               class="flex items-center justify-center px-3.5 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endif %}
+                
+                {% if forloop.last and num < products.paginator.num_pages|add:'-1' %}
+                    <li>
+                        <span class="flex items-center justify-center px-3.5 h-10 leading-tight text-gray-500 bg-white border border-gray-300">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Наступна сторінка -->
+            {% if products.has_next %}
+                <li>
+                    <a href="?page={{ products.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                       class="flex items-center justify-center px-3.5 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                       aria-label="Наступна сторінка">
+                        <span class="hidden md:inline">Наступна</span> <i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <span class="flex items-center justify-center px-3.5 h-10 leading-tight text-gray-400 bg-gray-100 border border-gray-300 rounded-r-lg cursor-not-allowed"
+                          aria-hidden="true">
+                        <span class="hidden md:inline">Наступна</span> <i class="fas fa-chevron-right ml-1"></i>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    <!-- Інформація про сторінку на мобільних пристроях -->
+    <div class="mt-4 text-center text-sm text-gray-600 md:hidden">
+        <span>Сторінка {{ products.number }} з {{ products.paginator.num_pages }}</span>
+    </div>
+    
+    <!-- Додаткова інформація для десктопів -->
+    <div class="mt-6 hidden md:block">
+        <p class="text-center text-gray-600 text-sm">
+            Показано <span class="font-medium">{{ products.start_index }}</span>–<span class="font-medium">{{ products.end_index }}</span> 
+            товарів з <span class="font-medium">{{ products.paginator.count }}</span> усього
+        </p>
+    </div>
 </div>
 {% endif %}

@@ -1,19 +1,165 @@
-{% extends 'main/base.html' %}
-
+ї{% extends 'main/base.html' %}
+{% load static tailwind_tags %}
 {% block title %}Профіль{% endblock %}
 
 {% block content %}
-<h1>Мій профіль</h1>
-
-<div class="profile-info">
-    <p><strong>Ім'я користувача:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email|default:"Не вказано" }}</p>
-    <p><strong>Дата реєстрації:</strong> {{ user.date_joined|date:"d.m.Y H:i" }}</p>
-    <p><strong>Останній вхід:</strong> {{ user.last_login|date:"d.m.Y H:i"|default:"Ніколи" }}</p>
-</div>
-
-<div class="actions">
-    <a href="{% url 'main:product_list' %}" class="btn">Повернутися до товарів</a>
-    <a href="{% url 'accounts:logout' %}" class="btn">Вийти</a>
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <!-- Заголовок -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 md:p-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2">Мій профіль</h1>
+                    <p class="opacity-90">Інформація про ваш обліковий запис</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-3xl">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="{{ request.user.username }}" class="w-full h-full rounded-full object-cover">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Основний контент -->
+        <div class="p-6 md:p-8">
+            <!-- Інформація про користувача -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Ліва колонка -->
+                <div class="space-y-5">
+                    <div class="flex items-start p-4 bg-blue-50 rounded-lg border border-blue-100">
+                        <div class="flex-shrink-0 mt-1 mr-3 text-blue-600">
+                            <i class="fas fa-user text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Ім'я користувача</h3>
+                            <p class="text-lg font-semibold text-gray-900">{{ request.user.username }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start p-4 bg-green-50 rounded-lg border border-green-100">
+                        <div class="flex-shrink-0 mt-1 mr-3 text-green-600">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Email</h3>
+                            <p class="text-lg font-semibold text-gray-900">
+                                {{ request.user.email|default:"Не вказано" }}
+                                {% if not request.user.email %}
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>Не підтверджено
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Права колонка -->
+                <div class="space-y-5">
+                    <div class="flex items-start p-4 bg-purple-50 rounded-lg border border-purple-100">
+                        <div class="flex-shrink-0 mt-1 mr-3 text-purple-600">
+                            <i class="fas fa-calendar-plus text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Дата реєстрації</h3>
+                            <p class="text-lg font-semibold text-gray-900">{{ request.user.date_joined|date:"d.m.Y H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start p-4 bg-orange-50 rounded-lg border border-orange-100">
+                        <div class="flex-shrink-0 mt-1 mr-3 text-orange-600">
+                            <i class="fas fa-clock text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Останній вхід</h3>
+                            <p class="text-lg font-semibold text-gray-900">
+                                {{ request.user.last_login|date:"d.m.Y H:i"|default:"Ніколи" }}
+                                {% if not request.user.last_login %}
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-times-circle mr-1"></i>Немає даних
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Додаткова інформація профілю -->
+            {% if profile %}
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                        Додаткова інформація
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        {% if profile.bio %}
+                            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <h3 class="text-sm font-medium text-gray-500 mb-2 flex items-center">
+                                    <i class="fas fa-align-left mr-2 text-gray-600"></i>
+                                    Про себе
+                                </h3>
+                                <p class="text-gray-800 whitespace-pre-line">{{ profile.bio }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {% if profile.birth_date %}
+                                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <h3 class="text-sm font-medium text-gray-500 mb-2 flex items-center">
+                                        <i class="fas fa-birthday-cake mr-2 text-gray-600"></i>
+                                        Дата народження
+                                    </h3>
+                                    <p class="text-gray-800">{{ profile.birth_date|date:"d.m.Y" }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if profile.location %}
+                                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <h3 class="text-sm font-medium text-gray-500 mb-2 flex items-center">
+                                        <i class="fas fa-map-marker-alt mr-2 text-gray-600"></i>
+                                        Місто
+                                    </h3>
+                                    <p class="text-gray-800">{{ profile.location }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if profile.website %}
+                                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <h3 class="text-sm font-medium text-gray-500 mb-2 flex items-center">
+                                        <i class="fas fa-globe mr-2 text-gray-600"></i>
+                                        Веб-сайт
+                                    </h3>
+                                    <p class="text-blue-600 hover:underline">
+                                        <a href="{{ profile.website }}" target="_blank" rel="noopener noreferrer">{{ profile.website }}</a>
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Дії -->
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+                <a href="{% url 'main:product_list' %}" 
+                   class="flex-1 sm:flex-none flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span>Повернутися до товарів</span>
+                </a>
+                
+                <a href="{% url 'accounts:logout' %}" 
+                   class="flex-1 sm:flex-none flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all transform hover:-translate-y-0.5">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    <span>Вийти з акаунту</span>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

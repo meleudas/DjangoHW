@@ -1,6 +1,7 @@
 from django import template
 from django.utils import timezone
-
+from markdownx.utils import markdownify
+from django.utils.safestring import mark_safe
 register = template.Library()
 
 @register.filter(name='currency')
@@ -60,3 +61,10 @@ def time_ago(date):
         return f"{days} дн тому"
     else:
         return date.strftime("%d.%m.%Y")    
+    
+@register.filter(name='markdown')
+def markdown_format(text):
+    """Конвертує Markdown текст у HTML"""
+    if not text:
+        return ""
+    return mark_safe(markdownify(text))
