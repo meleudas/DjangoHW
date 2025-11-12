@@ -8,7 +8,13 @@
 <div class="container mx-auto px-4 py-8 max-w-6xl">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <!-- Зображення товару -->
-        <div class="flex justify-center items-center bg-gray-50 rounded-xl p-4">
+        <div class="flex justify-center items-center bg-gray-50 rounded-xl p-4 relative">
+            {% if product.has_active_discount %}
+                <div class="absolute top-4 left-4 bg-red-500 text-white font-bold px-4 py-2 rounded shadow-lg">
+                    -{{ product.get_discount_percentage }}{% if product.get_active_discount.discount_type == 'percentage' %}%{% else %} грн{% endif %}
+                </div>
+            {% endif %}
+
             {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" 
                      class="max-w-full h-auto rounded-lg shadow-md object-contain"
@@ -35,10 +41,13 @@
                 </span>
             </div>
 
+            <!-- Ціна зі знижкою -->
             <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-3xl font-bold rounded-lg px-6 py-4 mb-6 shadow-lg">
-                {{ product.price|currency }}
-                {% if product.discount_price %}
-                    <span class="text-xl line-through opacity-75 ml-3">{{ product.discount_price|currency }}</span>
+                {% if product.has_active_discount %}
+                    <span>{{ product.get_discounted_price|currency }}</span>
+                    <span class="text-xl line-through opacity-75 ml-3">{{ product.price|currency }}</span>
+                {% else %}
+                    {{ product.price|currency }}
                 {% endif %}
             </div>
 
@@ -62,16 +71,37 @@
 
             <!-- Дії з товаром -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-auto pt-4 border-t border-gray-200">
-                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors shadow-md">
-                    <i class="fas fa-cart-plus mr-2"></i>Додати до кошика
-                </button>
+                <!-- Форма додавання в кошик -->
+                <form method="post" action="{% url 'cart:cart_add' product.id %}" 
+                    class="flex-1" id="add-to-cart-form">
+                    {% csrf_token %}
+                    <!-- Поле кількості (сховане, бо за замовчуванням — 1) -->
+                    {{ cart_product_form.quantity }}
+                    {{ cart_product_form.override }}
+
+                    <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors shadow-md flex items-center justify-center">
+                        <i class="fas fa-cart-plus mr-2"></i>Додати до кошика
+                    </button>
+                </form>
+
                 <a href="{% url 'main:product_list' %}" 
-                   class="flex-1 sm:flex-none text-center bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors">
+                class="flex-1 sm:flex-none text-center bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors">
                     Повернутися до каталогу
                 </a>
             </div>
         </div>
+         
     </div>
+
+    <!-- Відгуки -->
+    {% if product %}
+        <section class="mt-16">
+            <div class="border-t border-gray-200 pt-10">
+                {% include 'reviews/review_list.html' %}
+            </div>
+        </section>
+    {% endif %}
 
     <!-- Схожі товари -->
     {% if related_products %}

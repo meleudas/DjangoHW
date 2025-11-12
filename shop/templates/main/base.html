@@ -45,34 +45,87 @@
                 <!-- Auth Buttons -->
                 <div class="flex items-center space-x-3">
                     {% if user.is_authenticated %}
+                        <!-- Промокоди (тільки для staff) -->
                         {% if user.is_staff %}
-                            <a href="{% url 'admin:index' %}" 
-                               class="hidden sm:inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-sm">
-                                <i class="fas fa-cog mr-2"></i>Адмінка
+                            <a href="{% url 'discounts:promo_code_list' %}" 
+                             class="hidden sm:inline-flex items-center px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-sm">
+                                <span class="hidden sm:inline">Промокоди</span>
                             </a>
                         {% endif %}
+
+                        <!-- Адмінка -->
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin:index' %}" 
+                            class="hidden sm:inline-flex items-center px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-sm">
+                                <i class="fas fa-cog mr-1 sm:mr-2"></i>
+                                <span class="hidden sm:inline">Адмінка</span>
+                            </a>
+                        {% endif %}
+
+                        <!-- Профіль -->
                         <a href="{% url 'accounts:profile' %}" 
-                           class="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-                            <i class="fas fa-user mr-2"></i>Профіль
+                        class="hidden sm:inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+                            <i class="fas fa-user mr-1 sm:mr-2"></i>
+                            <span class="hidden sm:inline">Профіль</span>
                         </a>
+
+                        <!-- Кошик -->
+                        {% with cart_item_count=request.session.cart|length|default:0 %}
+                            <a href="{% url 'cart:cart_detail' %}" 
+                            class="relative inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-shopping-cart text-gray-600 mr-1 sm:mr-2"></i>
+                                <span class="hidden sm:inline">Кошик</span>
+                                
+                                <!-- Count badge -->
+                                {% if cart_item_count > 0 %}
+                                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                        {{ cart_item_count }}
+                                    </span>
+                                {% endif %}
+
+                                <!-- Promo indicator -->
+                                {% if request.session.applied_promo %}
+                                    <span class="ml-1 hidden sm:inline bg-yellow-100 text-yellow-800 text-xs px-1.5 py-0.5 rounded">
+                                        <i class="fas fa-gift text-xs mr-0.5"></i>PROMO
+                                    </span>
+                                {% endif %}
+                            </a>
+                        {% endwith %}
+
+                        <!-- Вихід -->
                         <a href="{% url 'accounts:logout' %}" 
-                           class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                             <i class="fas fa-sign-out-alt mr-2 text-gray-600"></i>
                             <span class="hidden sm:inline">Вийти</span>
-                            
                         </a>
+
                     {% else %}
+                        <!-- Для гостей -->
                         <a href="{% url 'accounts:login' %}" 
-                           class="hidden sm:inline-flex items-center px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                        class="hidden sm:inline-flex items-center px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
                             <i class="fas fa-sign-in-alt mr-2"></i>Вхід
                         </a>
                         <a href="{% url 'accounts:register' %}" 
-                           class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm">
                             <i class="fas fa-user-plus mr-2"></i>
                             <span class="hidden sm:inline">Реєстрація</span>
                         </a>
+
+                        <!-- Кошик для гостей -->
+                        {% with cart_item_count=request.session.cart|length|default:0 %}
+                            <a href="{% url 'cart:cart_detail' %}" 
+                            class="relative inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-shopping-cart text-gray-600 mr-1 sm:mr-2"></i>
+                                {% if cart_item_count > 0 %}
+                                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                        {{ cart_item_count }}
+                                    </span>
+                                {% endif %}
+                                <span class="hidden sm:inline">Кошик</span>
+                            </a>
+                        {% endwith %}
                     {% endif %}
-                    
+
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <i class="fas fa-bars text-xl"></i>

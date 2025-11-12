@@ -1,0 +1,63 @@
+    {% extends 'main/base.html' %}
+    {% load tailwind_tags %}
+    {% load widget_tweaks %}
+
+    {% block title %}Створити промокод{% endblock %}
+
+    {% block content %}
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Створити промокод</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">{{ form.code.label }}</label>
+                    {{ form.code|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                    {{ form.code.errors }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">{{ form.discount_type.label }}</label>
+                    {{ form.discount_type|add_class:"inline-flex space-x-2" }}
+                    {{ form.discount_type.errors }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">{{ form.value.label }}</label>
+                    {{ form.value|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                    {{ form.value.errors }}
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">{{ form.start_date.label }}</label>
+                        {{ form.start_date|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                        {{ form.start_date.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">{{ form.end_date.label }}</label>
+                        {{ form.end_date|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                        {{ form.end_date.errors }}
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">{{ form.usage_limit.label }}</label>
+                    {{ form.usage_limit|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                    {{ form.usage_limit.errors }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">{{ form.min_order_amount.label }}</label>
+                    {{ form.min_order_amount|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                    {{ form.min_order_amount.errors }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">{{ form.description.label }}</label>
+                    {{ form.description|add_class:"w-full border-gray-300 rounded-lg p-2" }}
+                    {{ form.description.errors }}
+                </div>
+                <div class="flex space-x-4 mt-4">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Створити</button>
+                    <a href="{% url 'discounts:promo_code_list' %}" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300">Скасувати</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

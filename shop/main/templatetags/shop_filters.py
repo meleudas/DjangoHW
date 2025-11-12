@@ -68,3 +68,66 @@ def markdown_format(text):
     if not text:
         return ""
     return mark_safe(markdownify(text))
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key, 0)
+
+@register.filter
+def div(value, arg):
+    try:
+        return float(value) / float(arg)
+    except (ValueError, ZeroDivisionError, TypeError):
+        return 0
+
+@register.filter
+def mul(value, arg):
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return 0
+    
+@register.filter
+def rjust(value, width):
+    return str(value).rjust(width)
+
+@register.filter
+def ljust(value, width):
+    return str(value).ljust(width)
+
+@register.filter
+def stars_display(rating):
+    """Відображає рейтинг зірками (HTML)"""
+    try:
+        rating = int(round(float(rating)))
+        filled = '★' * rating
+        empty = '☆' * (5 - rating)
+        return mark_safe(filled + empty)
+    except (ValueError, TypeError):
+        return mark_safe('☆☆☆☆☆')
+
+@register.filter
+def stars_display_for_choice(choice_value, selected_value):
+    """
+    Повертає HTML для однієї зірки на основі choice_value та selected_value.
+    Використовується для радіо-кнопок.
+    """
+    try:
+        choice_value = int(choice_value)
+        selected_value = int(selected_value) if selected_value else 0
+        # Якщо це вибране значення або менше за вибране, то зірка заповнена
+        is_filled = choice_value <= selected_value
+        return mark_safe('★' if is_filled else '☆')
+    except (ValueError, TypeError):
+        return mark_safe('☆')
+    
+    
+@register.filter(name='replace')
+def replace(value, args):
+    """Замінює підрядок у рядку: {{ value|replace:"старе,нове" }}"""
+    try:
+        old, new = args.split(',', 1)
+        return value.replace(old, new)
+    except Exception:
+        return value

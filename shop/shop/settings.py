@@ -38,8 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
+    
+    
     'main',
     'accounts',
+    'reviews',
+    'discounts',
+    'cart',
+    
     'tailwind',
     'theme',
     'markdownx',
@@ -151,3 +158,11 @@ MARKDOWNX_MEDIA_PATH = 'markdownx/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+CART_SESSION_ID = 'cart'
+
+
+SESSION_COOKIE_AGE = 86400
+SESSION_SAVE_EVERY_REQUEST = True  

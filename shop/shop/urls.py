@@ -23,7 +23,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls', namespace='main')),
     path('', include('accounts.urls', namespace='accounts')),
-      path('markdownx/', include('markdownx.urls')),
+    path('markdownx/', include('markdownx.urls')),
+    path('reviews/', include('reviews.urls', namespace='reviews')),
+    path('discounts/', include('discounts.urls', namespace='discounts')),
+    path('cart/', include('cart.urls', namespace='cart')),
+
 ]
 if settings.DEBUG:
     # Include django_browser_reload URLs only in DEBUG mode

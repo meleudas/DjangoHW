@@ -1,0 +1,127 @@
+<!-- templates/discounts/promo_code_form.html -->
+{% extends "main/base.html" %}
+{% load widget_tweaks %}
+{% block title %}{% if promo.pk %}Редагувати{% else %}Створити{% endif %} промокод{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center mb-6">
+      <div class="bg-purple-100 p-3 rounded-lg mr-4">
+        <i class="fas fa-tags text-purple-600 text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">
+          {% if promo.pk %}Редагувати промокод{% else %}Створити промокод{% endif %}
+        </h1>
+        <p class="text-gray-500">
+          {% if promo.pk %}Редагування існуючого коду «<span class="font-mono">{{ promo.code }}</span>»{% else %}Введіть параметри нового промокоду{% endif %}
+        </p>
+      </div>
+        
+    </div>
+      {% if form.errors %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+                <p><strong>Помилки форми:</strong></p>
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        <li>{{ field }}: {{ errors }}</li>
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+      {% endif %}
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Код -->
+      <div class="mb-5">
+        <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+          Код промокоду * <span class="text-gray-500 text-xs">(мін. 4 символи, великий регістр)</span>
+        </label>
+        {{ form.code|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" }}
+        {% if form.code.errors %}<p class="mt-1 text-sm text-red-600">{{ form.code.errors }}</p>{% endif %}
+      </div>
+
+      <!-- Тип знижки -->
+      <div class="mb-5">
+        <label for="{{ form.discount_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+          Тип знижки *
+        </label>
+        <div class="relative">
+          {{ form.discount_type|attr:"class:w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 appearance-none bg-white" }}
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+        {% if form.discount_type.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.discount_type.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Значення -->
+      <div class="mb-5">
+        <label for="{{ form.value.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+          Розмір знижки *
+        </label>
+        {{ form.value|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" }}
+        {% if form.value.errors %}<p class="mt-1 text-sm text-red-600">{{ form.value.errors }}</p>{% endif %}
+      </div>
+
+      <!-- Дати -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <div>
+          <label for="{{ form.start_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Початок *</label>
+          {{ form.start_date|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg" }}
+        </div>
+        <div>
+          <label for="{{ form.end_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Завершення *</label>
+          {{ form.end_date|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg" }}
+        </div>
+      </div>
+
+      <!-- Ліміт та мін. сума -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <div>
+          <label for="{{ form.usage_limit.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+            Ліміт використань <span class="text-gray-500">(залиште порожнім — без обмежень)</span>
+          </label>
+          {{ form.usage_limit|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" }}
+          {% if form.usage_limit.errors %}<p class="mt-1 text-sm text-red-600">{{ form.usage_limit.errors }}</p>{% endif %}
+        </div>
+        <div>
+          <label for="{{ form.min_order_amount.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+            Мін. сума замовлення (грн) *
+          </label>
+          {{ form.min_order_amount|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" }}
+        </div>
+      </div>
+
+      <!-- Опис -->
+      <div class="mb-5">
+        <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+          Опис (необов’язково)
+        </label>
+        {{ form.description|attr:"class:w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500|rows:3" }}
+      </div>
+
+      <!-- Кнопки -->
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+        <button type="submit"
+                class="px-5 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 shadow transition-colors">
+          {% if promo.pk %}Оновити{% else %}Створити{% endif %}
+        </button>
+        <a href="{% url 'discounts:promo_code_list' %}"
+           class="px-5 py-2.5 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors">
+          Скасувати
+        </a>
+      </div>
+    </form>
+    
+  </div>
+</div>
+{% endblock %}

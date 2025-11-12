@@ -1,0 +1,12 @@
+<div class="flex space-x-1 justify-center" id="star-rating-{{ field_name }}">
+    
+    {% for star in stars %}
+        
+        <input type="radio" id="{{ field_name }}_{{ star.value }}" name="{{ field_name }}" value="{{ star.value }}" {% if star.is_selected %}checked{% endif %} class="hidden" />
+        
+        <label for="{{ field_name }}_{{ star.value }}" 
+               class="text-3xl text-gray-300 cursor-pointer transition-colors duration-150">
+            ★
+        </label>
+    {% endfor %}
+</div>

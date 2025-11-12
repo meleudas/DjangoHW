@@ -1,0 +1,134 @@
+{% load static tailwind_tags shop_filters %}
+
+<div class="mt-12 pt-8 border-t border-gray-200">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Відгуки та рейтинг</h2>
+
+    <!-- Статистика -->
+    <div class="bg-gray-50 rounded-xl p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Середній рейтинг -->
+            <div class="text-center">
+                <div class="text-4xl font-bold text-yellow-600">{{ average_rating }}</div>
+                <div class="text-sm text-gray-500 mt-1">середній рейтинг</div>
+                <div class="mt-2 text-2xl">
+                     {{ average_rating|stars_display }}
+                </div>
+            </div>
+
+            <!-- Кількість -->
+            <div class="text-center">
+                <div class="text-4xl font-bold text-blue-600">{{ reviews_count }}</div>
+                <div class="text-sm text-gray-500 mt-1">відгуків</div>
+            </div>
+
+            <!-- Розподіл -->
+            <div>
+                <div class="text-sm font-medium text-gray-700 mb-2">Розподіл оцінок:</div>
+                {% for stars in "54321"|make_list reversed %}
+                    {% with count=rating_distribution|get_item:forloop.counter0|default:0 %}
+                    <div class="flex items-center mb-1">
+                        <span class="w-8 text-right mr-2 text-gray-600">{{ stars }}★</span>
+                        <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                            {% if reviews_count %}
+                                <div class="bg-yellow-500 h-2.5 rounded-full" 
+                                     style="width: {{ count|div:reviews_count|mul:100 }}%">
+                                </div>
+                            {% endif %}
+                        </div>
+                        <span class="ml-2 text-sm text-gray-500 w-8 text-center">{{ count }}</span>
+                    </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка "Залишити відгук" -->
+    {% if request.user.is_authenticated and not user_review %}
+        <div class="text-center mb-8">
+            <a href="{% url 'reviews:add_review' product.id %}"
+               class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 shadow-md transition">
+                <i class="fas fa-plus-circle mr-2"></i>
+                Залишити відгук
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Список відгуків -->
+    {% if reviews %}
+        <div class="space-y-6">
+            {% for review in reviews %}
+                <div class="bg-white rounded-lg shadow-sm border p-5 hover:shadow-md transition">
+                    <div class="flex items-start">
+                        <!-- Аватар -->
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg">
+                            {{ review.author.username|first|upper }}
+                        </div>
+
+                        <div class="ml-4 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-semibold text-gray-900">{{ review.title }}</h3>
+                                <span class="text-sm text-gray-500">
+                                    {{ review.created_at|date:"d.m.Y" }}
+                                </span>
+                            </div>
+
+                            <div class="mt-1 flex items-center">
+                                <span class="text-yellow-500 text-lg">
+                                    {{ review.get_rating_display_stars }}
+                                </span>
+                                <span class="ml-2 text-sm text-gray-500">
+                                    ({{ review.rating }})
+                                </span>
+                            </div>
+
+                            <p class="mt-3 text-gray-700 leading-relaxed">{{ review.content }}</p>
+
+                            {% if review.advantages %}
+                                <div class="mt-3 pt-3 border-t border-gray-100">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-check mr-1"></i> Переваги
+                                    </span>
+                                    <p class="mt-1 text-gray-600">{{ review.advantages }}</p>
+                                </div>
+                            {% endif %}
+
+                            {% if review.disadvantages %}
+                                <div class="mt-3 pt-3 border-t border-gray-100">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> Недоліки
+                                    </span>
+                                    <p class="mt-1 text-gray-600">{{ review.disadvantages }}</p>
+                                </div>
+                            {% endif %}
+
+                            <!-- Дії -->
+                            <div class="mt-4 flex items-center space-x-3">
+                                <button onclick="location.href='{% url 'reviews:mark_helpful' review.id %}';"
+                                        class="flex items-center text-sm text-gray-500 hover:text-blue-600">
+                                    <i class="far fa-thumbs-up mr-1"></i>
+                                    Корисно ({{ review.helpful_count }})
+                                </button>
+
+                                {% if request.user == review.author or request.user.is_staff %}
+                                    <a href="{% url 'reviews:edit_review' review.id %}"
+                                       class="text-sm text-blue-600 hover:underline">Редагувати</a>
+                                    <a href="{% url 'reviews:delete_review' review.id %}"
+                                       class="text-sm text-red-600 hover:underline"
+                                       onclick="return confirm('Ви впевнені, що хочете видалити відгук?');">
+                                        Видалити
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-comment-slash text-gray-400 text-4xl mb-4"></i>
+            <p class="text-gray-500">Поки немає відгуків. Будьте першим!</p>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,8 @@
+<div class="mt-4">
+    <form method="post" action="{% url 'discounts:remove_promo_code' %}">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+            Видалити промокод
+        </button>
+    </form>
+</div>

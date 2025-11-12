@@ -40,3 +40,25 @@ def show_popular_products(count=4):
     """Відображає список популярних товарів"""
     products = Product.objects.filter(is_available=True).order_by('-views')[:count]
     return {'popular_products': products}
+
+
+@register.inclusion_tag('main/components/star_rating_widget.html')
+def render_star_rating(field_name, field_value=None):
+    """
+    Рендерить радіо-кнопки для рейтингу з візуальними зірками.
+    Тепер список зірок формується У ЗВОРОТНОМУ ПОРЯДКУ (5, 4, 3, 2, 1)
+    для коректної роботи CSS-селектора (~).
+    """
+    stars = []
+    # Змінюємо діапазон, щоб йти від 5 до 1
+    for i in range(1, 6): 
+        stars.append({
+            'value': i,
+            # Використовуємо ">=" для перевірки, оскільки ітерація йде з 5 до 1
+            'is_selected': field_value >= i if field_value else False 
+        })
+    return {
+        'field_name': field_name,
+        'stars': stars,
+        'current_value': field_value
+    }

@@ -1,0 +1,152 @@
+{% extends 'main/base.html' %}
+{% load static tailwind_tags %}
+
+{% block title %}🛒 Кошик покупок{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 flex items-center">
+    <i class="fas fa-shopping-cart mr-3 text-blue-600"></i> Ваш кошик
+  </h1>
+
+  {% if cart|length > 0 %}
+    <div class="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-8 items-start">
+      
+      <!-- Список товарів -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 w-full">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-gray-600 uppercase font-semibold">
+            <tr>
+              <th class="px-6 py-4 text-left w-[45%]">Товар</th>
+              <th class="px-6 py-4 text-left w-[15%]">Кількість</th>
+              <th class="px-6 py-4 text-left w-[15%]">Ціна</th>
+              <th class="px-6 py-4 text-left w-[15%]">Сума</th>
+              <th class="px-6 py-4 text-left w-[10%]">Дія</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for item in cart %}
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-5">
+                <div class="flex items-center gap-4">
+                  {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                         class="w-16 h-16 rounded-lg object-cover border border-gray-200">
+                  {% else %}
+                    <div class="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+                      <i class="fas fa-box-open text-xl"></i>
+                    </div>
+                  {% endif %}
+                  <div>
+                    <a href="{{ item.product.get_absolute_url }}" 
+                       class="font-medium text-blue-700 hover:underline">
+                      {{ item.product.name }}
+                    </a>
+                    <div class="text-xs text-gray-500 mt-1">
+                      {{ item.product.category.name }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-6 py-5">
+                <form method="post" action="{% url 'cart:cart_add' item.product.id %}" 
+                      class="flex items-center gap-2">
+                  {% csrf_token %}
+                  {{ item.update_quantity_form.quantity }}
+                  {{ item.update_quantity_form.override }}
+                  <button type="submit"
+                          class="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm">
+                    <i class="fas fa-sync-alt"></i> Оновити
+                  </button>
+                </form>
+              </td>
+
+              <td class="px-6 py-5 text-gray-700 font-medium">
+                ₴{{ item.price|floatformat:2 }}
+              </td>
+
+              <td class="px-6 py-5 text-gray-900 font-semibold">
+                ₴{{ item.total_price|floatformat:2 }}
+              </td>
+
+              <td class="px-6 py-5">
+                <form method="post" action="{% url 'cart:cart_remove' item.product.id %}">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition"
+                          title="Видалити">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Підсумок + промокод -->
+      <div class="bg-white rounded-xl shadow-md p-6 sticky top-24">
+        <h2 class="text-xl font-bold text-gray-800 mb-5">Підсумок замовлення</h2>
+        
+        <div class="space-y-3 mb-6">
+          <div class="flex justify-between text-gray-600">
+            <span>Товарів:</span>
+            <span>{{ cart|length }} шт.</span>
+          </div>
+          <div class="flex justify-between text-lg font-semibold text-gray-800">
+            <span>Загальна сума:</span>
+            <span>₴{{ cart.get_total_price|floatformat:2 }}</span>
+          </div>
+        </div>
+
+        <!-- Блок промокоду -->
+        {% include "discounts/promo_apply_block.html" %}
+
+        {% if promo_info %}
+        <div class="pt-4 border-t border-gray-200">
+          <div class="flex justify-between text-green-700 font-medium">
+            <span>Знижка ({{ promo_info.promo.code }}):</span>
+            <span>−₴{{ promo_info.discount|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between text-xl font-bold text-gray-900 mt-3">
+            <span>До сплати:</span>
+            <span class="text-blue-600">₴{{ promo_info.new_total|floatformat:2 }}</span>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-8">
+          <div class="relative">
+            <button 
+              disabled
+              class="w-full bg-gray-400 text-gray-200 font-bold py-3 px-4 rounded-lg cursor-not-allowed"
+              title="Функція замовлення ще в розробці">
+              <i class="fas fa-box mr-2"></i> Оформити замовлення
+            </button>
+            <div class="absolute -bottom-6 left-0 text-xs text-gray-500">
+              <i class="fas fa-wrench mr-1"></i> Скоро — оформлення замовлень
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <div class="bg-white rounded-xl shadow-md p-12 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-6">
+        <i class="fas fa-shopping-cart text-2xl text-yellow-600"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-3">Ваш кошик порожній</h2>
+      <p class="text-gray-600 max-w-md mx-auto mb-6">
+        Додайте товари з каталогу, щоб почати покупки. Вони з’являться тут.
+      </p>
+      <a href="{% url 'main:product_list' %}" 
+         class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-colors">
+        <i class="fas fa-store mr-2"></i> Перейти до магазину
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

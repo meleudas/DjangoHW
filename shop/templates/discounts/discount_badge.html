@@ -1,0 +1,11 @@
+{% if product.has_active_discount %}
+  {% with perc=product.get_discount_percentage %}
+    <span class="inline-block bg-red-500 text-white text-sm font-semibold px-2 py-1 rounded">
+      {% if perc %}
+        -{{ perc }}%
+      {% else %}
+        -{{ product.get_active_discount.value }}грн
+      {% endif %}
+    </span>
+  {% endwith %}
+{% endif %}

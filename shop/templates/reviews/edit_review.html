@@ -1,0 +1,135 @@
+{% extends 'main/base.html' %}
+{% load static tailwind_tags shop_tags shop_filters %}
+
+{% block title %}Редагувати відгук{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <a href="{{ review.product.get_absolute_url }}" class="inline-flex items-center text-blue-600 hover:underline mb-4">
+            <i class="fas fa-arrow-left mr-2"></i> Назад до товару
+        </a>
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Редагувати відгук</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <!-- Копіюємо форму з add_review, але з instance -->
+            {% if form.non_field_errors %}
+                <div class="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="mb-6">
+                <label class="block text-lg font-medium text-gray-700 mb-3">{{ form.rating.label }}</label>
+                
+                {% render_star_rating "rating" form.rating.value %}
+                
+                {{ form.rating.errors }}
+            </div>
+
+
+
+
+            <div class="mb-4">
+                <label class="block text-lg font-medium text-gray-700 mb-2">{{ form.title.label }}</label>
+                {{ form.title }}
+                {{ form.title.errors }}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-lg font-medium text-gray-700 mb-2">{{ form.content.label }}</label>
+                {{ form.content }}
+                {{ form.content.errors }}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-lg font-medium text-gray-700 mb-2">{{ form.advantages.label }}</label>
+                {{ form.advantages }}
+                {{ form.advantages.errors }}
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-lg font-medium text-gray-700 mb-2">{{ form.disadvantages.label }}</label>
+                {{ form.disadvantages }}
+                {{ form.disadvantages.errors }}
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700">
+                    Зберегти зміни
+                </button>
+                <a href="{{ review.product.get_absolute_url }}" 
+                   class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+                    Скасувати
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingContainer = document.getElementById('star-rating-rating');
+        const stars = ratingContainer.querySelectorAll('label');
+        const inputs = ratingContainer.querySelectorAll('input[type="radio"]');
+        let selectedValue = 0;
+
+        // Ініціалізація: Зчитуємо поточне вибране значення
+        inputs.forEach(input => {
+            if (input.checked) {
+                selectedValue = parseInt(input.value);
+            }
+        });
+        
+        // Функція для зафарбовування зірок
+        function colorStars(count) {
+            stars.forEach((star, index) => {
+                // index йде від 0 до 4. Якщо count > index, зірку треба зафарбувати
+                if (count > index) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-500');
+                } else {
+                    star.classList.remove('text-yellow-500');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        // Ініціалізація при завантаженні (якщо форма була відправлена з помилкою)
+        colorStars(selectedValue);
+
+
+        // 1. Обробка події наведення миші (Hover)
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseover', function() {
+                // +1, бо index починається з 0
+                colorStars(index + 1); 
+            });
+        });
+
+        // 2. Обробка події, коли миша залишає контейнер (Mouseout)
+        ratingContainer.addEventListener('mouseout', function() {
+            // При поверненні відновлюємо колір на основі selectedValue
+            colorStars(selectedValue);
+        });
+
+        // 3. Обробка події кліку (Click)
+        stars.forEach((star, index) => {
+            star.addEventListener('click', function() {
+                // Зберігаємо нове вибране значення
+                selectedValue = index + 1;
+
+                // Встановлюємо відповідний input radio як checked
+                inputs.forEach(input => {
+                    if (parseInt(input.value) === selectedValue) {
+                        input.checked = true;
+                    }
+                });
+
+                // Перефарбовуємо зірки
+                colorStars(selectedValue);
+            });
+        });
+    });
+</script>
+{% endblock %}

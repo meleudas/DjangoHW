@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Product, Category
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from cart.forms import CartAddProductForm 
 
 def product_list(request, category_slug=None):
     categories = Category.objects.filter(is_active=True)
@@ -58,15 +59,29 @@ def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, is_available=True)
     product.views += 1
     product.save(update_fields=['views'])
+    
+    cart_product_form = CartAddProductForm()
 
-    # Схожі товари (4 шт.)
+    # Схожі товари
     related_products = Product.objects.filter(
         category=product.category,
         is_available=True
     ).exclude(id=product.id)[:4]
 
+    # --- Новий блок: відгуки ---
+    reviews = product.reviews.filter(is_active=True)
+    user_review = None
+    if request.user.is_authenticated:
+        user_review = reviews.filter(author=request.user).first()
+
     context = {
         'product': product,
         'related_products': related_products,
+        'reviews': reviews,
+        'cart_product_form': cart_product_form,
+        'reviews_count': product.get_reviews_count(),
+        'average_rating': product.get_average_rating(),
+        'rating_distribution': product.get_rating_distribution(),
+        'user_review': user_review,
     }
     return render(request, 'main/product_detail.html', context)
